@@ -142,15 +142,15 @@
 
         <v-row>
           <v-col cols="12" v-if="show">
-            <Chart :chart="pressureChartData" />
+            <Chart :chart="pressureChartData" :options="pressureChartOptions" />
           </v-col>
 
           <v-col cols="12" v-if="show">
-            <Chart :chart="rateChartData" />
+            <Chart :chart="rateChartData" :options="rateChartOptions" />
           </v-col>
 
           <v-col cols="12" v-if="show">
-            <Chart :chart="zoneChartData" />
+            <Chart :chart="zoneChartData" :options="zoneChartOptions" />
           </v-col>
         </v-row>
       </v-tab-item>
@@ -191,13 +191,179 @@ export default class ModelUI extends Vue {
   show = false;
 
   rateChartData = {};
-  rateChartOptions = {};
+  rateChartOptions = {
+    title: {
+      display: true,
+      text: "iCem",
+    },
+    legend: {
+      color: "B96B00",
+    },
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            callback: function (tick: string) {
+              return `${tick}, bpm`;
+            },
+            beginAtZero: true,
+            padding: 16,
+            fontColor: "#53565A",
+            fontSize: 12,
+            lineHeight: 0.1,
+            fontStyle: "bold",
+            maxTicksLimit: 6,
+          },
+        },
+      ],
+      xAxes: [
+        {
+          ticks: {
+            callback: function (tick: string) {
+              return `${tick}, bbl`;
+            },
+            padding: 16,
+            fontColor: "#53565A",
+            fontSize: 13,
+            fontStyle: "bold",
+            lineHeight: 1.5,
+            maxRotation: 0,
+            minRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 10,
+            source: "data",
+          },
+        },
+      ],
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+  };
 
   pressureChartData = {};
-  pressureChartOptions = {};
+  pressureChartOptions = {
+    title: {
+      display: true,
+      text: "iCem",
+    },
+    legend: {
+      color: "B96B00",
+    },
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            callback: function (tick: string) {
+              return `${tick}, bpm`;
+            },
+            beginAtZero: true,
+            padding: 16,
+            fontColor: "#53565A",
+            fontSize: 12,
+            lineHeight: 0.1,
+            fontStyle: "bold",
+            maxTicksLimit: 6,
+          },
+        },
+      ],
+      xAxes: [
+        {
+          ticks: {
+            callback: function (tick: string) {
+              return `${tick}, bbl`;
+            },
+            padding: 16,
+            fontColor: "#53565A",
+            fontSize: 13,
+            fontStyle: "bold",
+            lineHeight: 1.5,
+            maxRotation: 0,
+            minRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 10,
+            source: "data",
+          },
+        },
+      ],
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+  };
 
   zoneChartData = {};
-  zoneChartOptions = {};
+  zoneChartOptions = {
+    title: {
+      display: true,
+      text: "iCem",
+    },
+    legend: {
+      color: "B96B00",
+    },
+    scales: {
+      yAxes: [
+        {
+          display: true,
+          id: "rate",
+          type: "linear",
+          position: "right",
+          ticks: {
+            callback: function (tick: string) {
+              return `${tick}, bpm`;
+            },
+            beginAtZero: true,
+            padding: 16,
+            fontColor: "#53565A",
+            lineHeight: 0.1,
+            max: 3,
+            min: 0,
+            fontStyle: "bold",
+            maxTicksLimit: 7,
+          },
+        },
+        {
+          grid: {
+            drawOnChartArea: false, // only want the grid lines for one axis to show up
+          },
+          display: true,
+          id: "pressure",
+          type: "linear",
+          position: "left",
+          ticks: {
+            callback: function (tick: string) {
+              return `${tick}, psi`;
+            },
+            padding: 16,
+            fontColor: "#53565A",
+            fontSize: 12,
+            lineHeight: 0.1,
+            fontStyle: "bold",
+            maxTicksLimit: 7,
+          },
+        },
+      ],
+      xAxes: [
+        {
+          ticks: {
+            callback: function (tick: string) {
+              return `${tick}, bbl`;
+            },
+            padding: 16,
+            fontColor: "#53565A",
+            fontSize: 13,
+            fontStyle: "bold",
+            lineHeight: 1.5,
+            maxRotation: 0,
+            minRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 10,
+            source: "data",
+          },
+        },
+      ],
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+  };
 
   uploadFile(): any {
     console.log(this.file);
@@ -235,10 +401,12 @@ export default class ModelUI extends Vue {
       labels: Object.values(res.data.Volume),
       datasets: [
         {
-          label: "Pressure",
+          label: "Pressure, psi",
           borderColor: "#B96B00",
           backgroundColor: "transparent",
           data: Object.values(res.data.PumpingPressure),
+          borderDash: [0, 0],
+          pointRadius: 0.01,
         },
       ],
     };
@@ -249,16 +417,20 @@ export default class ModelUI extends Vue {
       labels: Object.values(res.data.Volume),
       datasets: [
         {
-          label: "Pump Rate",
+          label: "Pump Rate, bpm",
           borderColor: "#B96B00",
           backgroundColor: "transparent",
           data: Object.values(res.data.PumpRate),
+          borderDash: [0, 0],
+          pointRadius: 0.01,
         },
         {
-          label: "Return Rate",
+          label: "Return Rate, bpm",
           borderColor: "#00FF00",
           backgroundColor: "transparent",
           data: Object.values(res.data.ReturnRate),
+          borderDash: [0, 0],
+          pointRadius: 0.01,
         },
       ],
     };
@@ -269,16 +441,22 @@ export default class ModelUI extends Vue {
       labels: Object.values(res.data.Volume),
       datasets: [
         {
-          label: "Pump Rate",
-          borderColor: "#B96B00",
+          label: "Loss Zone Pressure, psi",
+          borderColor: "#0700ff",
           backgroundColor: "transparent",
-          data: Object.values(res.data.PumpRate),
+          data: Object.values(res.data.LossZonePressure),
+          borderDash: [0, 0],
+          pointRadius: 0.01,
+          yAxisID: "pressure",
         },
         {
-          label: "Return Rate",
-          borderColor: "#00FF00",
+          label: "Loss Rate, bpm",
+          borderColor: "#ff0026",
           backgroundColor: "transparent",
-          data: Object.values(res.data.ReturnRate),
+          data: Object.values(res.data.LossRate),
+          borderDash: [0, 0],
+          pointRadius: 0.01,
+          yAxisID: "rate",
         },
       ],
     };
