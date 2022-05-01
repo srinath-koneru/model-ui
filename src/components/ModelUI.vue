@@ -36,7 +36,12 @@
               <v-col cols="3">
                 <v-select
                   v-model="lossZoneType"
-                  :items="['Natural Fracture', 'Fracture']"
+                  :items="[
+                    'Natural Fracture',
+                    'Induced Fracture',
+                    'High Perm Zone',
+                    'High Perm Zone2',
+                  ]"
                   label="Loss Zone Type"
                 />
               </v-col>
@@ -45,7 +50,7 @@
                 <v-text-field
                   v-model="lossRate"
                   label="Loss rate"
-                  placeholder="Loss rate (bph)"
+                  placeholder="Loss rate (bpm)"
                 />
               </v-col>
 
@@ -374,11 +379,24 @@ export default class ModelUI extends Vue {
     axios
       .get("http://localhost:5000/model/merlin_hydraulics/", {
         params: {
-          CaseName: this.myCase,
-          type: this.lossZoneType,
-          rate: this.lossRate,
-          length: this.length,
-          perm: 0,
+          file_name: "",
+          case_id: "",
+          lzkwargs: {
+            Type: "",
+            Rate: "",
+            Length: "",
+            Depth: "",
+            Perm: "",
+          },
+          lcmkwargs: {
+            fluid_id: "",
+            lcm_name_id: "",
+            d50_fines: "",
+            po_lcm: "",
+            por_fines: "",
+            vol_fraction_fines: "",
+            lcm_conc: "",
+          },
         },
       })
       .then((res) => {
