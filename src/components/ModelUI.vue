@@ -175,7 +175,7 @@ import { data } from "@/mock/data";
   },
 })
 export default class ModelUI extends Vue {
-  file = null;
+  file: any = null;
   tab = null;
   myCase = "";
   items = ["1", "2", "3"];
@@ -370,8 +370,14 @@ export default class ModelUI extends Vue {
     maintainAspectRatio: false,
   };
 
-  uploadFile(): any {
-    console.log(this.file);
+  uploadFile(e: any): any {
+    const formData = new FormData();
+    formData.append("file", e);
+    axios.post("http://localhost:5000/load", formData, {
+      headers: {
+        "content-type": "multipart/form-data",
+      },
+    });
   }
 
   loadChart() {
@@ -379,23 +385,23 @@ export default class ModelUI extends Vue {
     axios
       .get("http://localhost:5000/model/merlin_hydraulics/", {
         params: {
-          file_name: "",
+          file_name: this.file.name,
           case_id: "",
           lzkwargs: {
-            Type: "",
-            Rate: "",
-            Length: "",
-            Depth: "",
-            Perm: "",
+            Type: this.lossZoneType,
+            Rate: this.lossRate,
+            Length: this.length,
+            Depth: this.depth,
+            Perm: 0,
           },
           lcmkwargs: {
-            fluid_id: "",
-            lcm_name_id: "",
-            d50_fines: "",
-            po_lcm: "",
-            por_fines: "",
-            vol_fraction_fines: "",
-            lcm_conc: "",
+            fluid_id: this.fluid,
+            lcm_name_id: this.lcm,
+            d50_fines: this.d50,
+            po_lcm: this.porosity,
+            por_fines: this.finePorosity,
+            vol_fraction_fines: this.fraction,
+            lcm_conc: this.cnoc,
           },
         },
       })
