@@ -23,10 +23,11 @@
               </v-col>
 
               <v-col cols="3">
-                <v-select
-                  v-model="myCase"
-                  :items="['My Own Case', 'Case 2']"
+                <v-text-field
+                  v-model="caseId"
                   label="Case"
+                  placeholder="Case"
+                  type="number"
                 />
               </v-col>
             </v-row>
@@ -51,6 +52,7 @@
                   v-model="lossRate"
                   label="Loss rate"
                   placeholder="Loss rate (bpm)"
+                  type="number"
                 />
               </v-col>
 
@@ -59,6 +61,7 @@
                   v-model="length"
                   label="Length"
                   placeholder="Length (ft)"
+                  type="number"
                 />
               </v-col>
 
@@ -67,6 +70,7 @@
                   v-model="depth"
                   label="Depth"
                   placeholder="Depth (ft)"
+                  type="number"
                 />
               </v-col>
             </v-row>
@@ -74,18 +78,18 @@
             <h4 class="my-4">LCM</h4>
             <v-row>
               <v-col cols="3">
-                <v-select
+                <v-text-field
                   v-model="fluid"
-                  :items="['Natural Fracture', 'Fracture']"
                   label="Fluid"
+                  placeholder="Fluid ID"
                 />
               </v-col>
 
               <v-col cols="3">
-                <v-select
+                <v-text-field
                   v-model="lcm"
-                  :items="['Natural Fracture', 'Fracture']"
                   label="LCM"
+                  placeholder="LCM Name ID"
                 />
               </v-col>
 
@@ -102,6 +106,7 @@
                   v-model="porosity"
                   label="Porosity"
                   placeholder="Porosity"
+                  type="number"
                 />
               </v-col>
 
@@ -110,6 +115,7 @@
                   v-model="finePorosity"
                   label="Fines Porosity"
                   placeholder="Fines Porosity"
+                  type="number"
                 />
               </v-col>
 
@@ -118,6 +124,7 @@
                   v-model="d50"
                   label="D50 Fines"
                   placeholder="D50 Fines"
+                  type="number"
                 />
               </v-col>
 
@@ -126,6 +133,7 @@
                   v-model="fraction"
                   label="Vol Fraction of fines"
                   placeholder="Vol Fraction of fines"
+                  type="number"
                 />
               </v-col>
             </v-row>
@@ -177,20 +185,19 @@ import { data } from "@/mock/data";
 export default class ModelUI extends Vue {
   file: any = null;
   tab = null;
-  myCase = "";
   items = ["1", "2", "3"];
-  case = "";
+  caseId = 0;
   lossZoneType = "";
-  lossRate = "";
-  length = "";
-  depth = "";
+  lossRate = 5.75;
+  length = 100;
+  depth = 8046;
   fluid = "";
-  lcm = "";
+  lcm = "Bridgemaker_2";
   cnoc = "";
-  porosity = "";
-  finePorosity = "";
+  porosity = 0.3;
+  finePorosity = 0.3;
   d50 = "";
-  fraction = "";
+  fraction = 0.0;
 
   loading = false;
   show = false;
@@ -386,7 +393,7 @@ export default class ModelUI extends Vue {
       .get("http://localhost:5000/model/merlin_hydraulics/", {
         params: {
           file_name: this.file.name,
-          case_id: "",
+          case_id: this.caseId,
           lzkwargs: {
             Type: this.lossZoneType,
             Rate: this.lossRate,
@@ -487,3 +494,19 @@ export default class ModelUI extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+</style>
