@@ -146,14 +146,19 @@
             color="info"
             @click="loadChart"
           >
-            Load Chart
+            Load
             <template v-slot:loader>
               <span>Loading...</span>
             </template>
           </v-btn>
         </v-card>
 
-        <v-row>
+        <v-radio-group v-if="show" v-model="loadType" row>
+          <v-radio label="Table" value="table"></v-radio>
+          <v-radio label="Chart" value="chart"></v-radio>
+        </v-radio-group>
+
+        <v-row v-if="loadType === 'chart'">
           <v-col cols="12" v-if="show">
             <Chart :chart="pressureChartData" :options="pressureChartOptions" />
           </v-col>
@@ -166,6 +171,16 @@
             <Chart :chart="zoneChartData" :options="zoneChartOptions" />
           </v-col>
         </v-row>
+
+        <div v-if="loadType === 'table'">
+          <v-data-table
+            v-if="show"
+            :headers="headers"
+            :items="responseData"
+            :items-per-page="10"
+            class="elevation-1"
+          ></v-data-table>
+        </div>
       </v-tab-item>
     </v-tabs-items>
   </v-container>
@@ -199,8 +214,12 @@ export default class ModelUI extends Vue {
   d50 = "";
   fraction = 0.0;
 
+  loadType = "table";
   loading = false;
   show = false;
+
+  responseData: any = [];
+  headers: any = [];
 
   rateChartData = {};
   rateChartOptions = {
@@ -380,7 +399,7 @@ export default class ModelUI extends Vue {
   uploadFile(e: any): any {
     const formData = new FormData();
     formData.append("file", e);
-    axios.post("http://localhost:5000/load", formData, {
+    axios.post("https://model-api.azurewebsites.net/load", formData, {
       headers: {
         "content-type": "multipart/form-data",
       },
@@ -390,7 +409,7 @@ export default class ModelUI extends Vue {
   loadChart() {
     this.loading = true;
     axios
-      .get("http://localhost:5000/model/merlin_hydraulics/", {
+      .get("https://model-api.azurewebsites.net/model/merlin_hydraulics/", {
         params: {
           file_name: this.file.name,
           case_id: this.caseId,
@@ -416,15 +435,36 @@ export default class ModelUI extends Vue {
         this.loadPressureChart(res);
         this.loadRateChart(res);
         this.loadZoneChart(res);
+        this.loadTable(res.data);
         this.show = true;
       })
       .catch(() => {
         this.loadPressureChart({ data });
         this.loadRateChart({ data });
         this.loadZoneChart({ data });
+        this.loadTable(data);
         this.show = true;
       })
       .finally(() => (this.loading = false));
+  }
+
+  loadTable(data: any) {
+    const keys: any = Object.keys(data);
+    keys.map((k: any) => {
+      this.headers.push({
+        text: k,
+        value: k,
+      });
+    });
+    const totalCount = Object.values(data[keys[0]]).length;
+
+    for (let i = 0; i < totalCount; i++) {
+      let obj: any = {};
+      for (let j = 0; j < keys.length; j++) {
+        obj[keys[j]] = Object.values(data[keys[j]])[i];
+      }
+      this.responseData.push(obj);
+    }
   }
 
   loadPressureChart(res: any) {

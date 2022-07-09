@@ -1,4 +1,4 @@
-export const data = {
+export const data: any = {
   Time: {
     "0": 0,
     "1": 1,
